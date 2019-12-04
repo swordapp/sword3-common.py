@@ -1,10 +1,3 @@
-from sword3common.lib.dataobj import DataObj
-
-class ServiceDocument(DataObj):
-    def __init__(self, raw=None):
-        super(ServiceDocument, self).__init__(raw, struct=SERVICE_STRUCT, expose_data=True)
-
-
 SERVICE_STRUCT = {
     "fields" : {
         "@context" : {"coerce" : "unicode"},
@@ -55,29 +48,17 @@ SERVICE_STRUCT = {
     }
 }
 
-from sword3common.lib.seamless import SeamlessMixin, SeamlessData
+from sword3common.lib.seamless import SeamlessMixin
 
-def makeSeamlessService(raw):
-    return SeamlessService(raw)
-
-def makeCP(raw):
-    return SeamlessData(raw)
-
-def extractCP(refined):
-    return refined.data
-
-class SeamlessService(SeamlessMixin):
+class ServiceDocument(SeamlessMixin):
     __SEAMLESS_STRUCT__ = SERVICE_STRUCT
 
     __SEAMLESS_PROPERTIES__ = {
-        "maxUploadSize" : {"path" : "maxUploadSize"},
-        "random" : {"path" : "doesnt.exist"},
-        "services" : {"path" : "services", "wrapper": makeSeamlessService},
-        "collection_policy" : {"path" : "collectionPolicy", "wrapper" : makeCP, "unwrapper" : extractCP}
+        "services" : {"path" : "services", "wrapper": lambda x: ServiceDocument(x), "unwrapper" : lambda x: x.__seamless__.data},
     }
 
     def __init__(self, raw=None):
-        super(SeamlessService, self).__init__(raw)
+        super(ServiceDocument, self).__init__(raw)
 
     @property
     def data(self):
