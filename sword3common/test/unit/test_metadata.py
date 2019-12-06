@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from sword3common.models.metadata import Metadata
-from sword3common.lib.seamless import SeamlessException
+from sword3common import constants
 
 class TestMetadata(TestCase):
     def test_01_metadata(self):
@@ -17,3 +17,6 @@ class TestMetadata(TestCase):
         assert m.get_dc_field("contributor") == "them"
         assert m.get_dcterms_field("dcterms:provenance") == "here"
         assert m.get_dcterms_field("modified") == "now"
+
+        assert m.data.get("@context") == constants.JSON_LD_CONTEXT
+        assert m.data.get("@type") == constants.TYPE_METADATA

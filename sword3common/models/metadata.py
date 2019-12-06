@@ -1,3 +1,6 @@
+from sword3common.lib.seamless import SeamlessMixin
+from sword3common import constants
+
 METADATA_STRUCT = {
     "fields" : {
         "@context" : {"coerce" : "unicode"},
@@ -6,13 +9,20 @@ METADATA_STRUCT = {
     }
 }
 
-from sword3common.lib.seamless import SeamlessMixin
-
 class Metadata(SeamlessMixin):
     __SEAMLESS_STRUCT__ = METADATA_STRUCT
 
     def __init__(self, raw=None):
         super(Metadata, self).__init__(raw)
+
+        # set the fixed attributes of this object
+        context = self.__seamless__.get_single("@context")
+        if context is None:
+            self.__seamless__.set_single("@context", constants.JSON_LD_CONTEXT)
+
+        typ = self.__seamless__.get_single("@type")
+        if typ is None:
+            self.__seamless__.set_single("@type", constants.TYPE_METADATA)
 
     @property
     def data(self):

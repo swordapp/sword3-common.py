@@ -1,3 +1,6 @@
+from sword3common.lib.seamless import SeamlessMixin
+from sword3common import constants
+
 SERVICE_STRUCT = {
     "fields" : {
         "@context" : {"coerce" : "unicode"},
@@ -48,8 +51,6 @@ SERVICE_STRUCT = {
     }
 }
 
-from sword3common.lib.seamless import SeamlessMixin
-
 class ServiceDocument(SeamlessMixin):
     __SEAMLESS_STRUCT__ = SERVICE_STRUCT
 
@@ -60,6 +61,20 @@ class ServiceDocument(SeamlessMixin):
     def __init__(self, raw=None):
         super(ServiceDocument, self).__init__(raw)
 
+        # set the fixed attributes of this object
+        context = self.__seamless__.get_single("@context")
+        if context is None:
+            self.__seamless__.set_single("@context", constants.JSON_LD_CONTEXT)
+
+        typ = self.__seamless__.get_single("@type")
+        if typ is None:
+            self.__seamless__.set_single("@type", constants.TYPE_SERVICE_DOCUMENT)
+
+
     @property
     def data(self):
         return self.__seamless__.data
+
+    @property
+    def service_url(self):
+        return self.__seamless__.get_single("@id")
