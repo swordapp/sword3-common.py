@@ -1,6 +1,7 @@
 import locale
 from urllib.parse import urlparse
 from copy import deepcopy
+from datetime import datetime
 
 ###############################################
 ## Common coerce functions
@@ -112,6 +113,14 @@ def to_bool(val):
     raise ValueError("Could not convert {val} to boolean. Expect either boolean or string.".format(val=val))
 
 
+def to_datetime(val):
+    try:
+        datetime.strptime(val, "%Y-%m-%dT%H:%M:%SZ")
+        return val
+    except:
+        raise ValueError("Could not convert string {val} to UTC Datetime".format(val=val))
+
+
 class SeamlessException(Exception):
     def __init__(self, msg, *args, **kwargs):
         self.message = msg
@@ -129,6 +138,7 @@ class SeamlessMixin(object):
         "float": floatify,
         "url": to_url,
         "bool": to_bool,
+        "datetime" : to_datetime
     }
 
     __SEAMLESS_DEFAULT_COERCE__ = "unicode"
@@ -781,18 +791,20 @@ class Construct(object):
                         raise SeamlessException("Field '{k}' is not permitted at '{c}'".format(k=k, c=c))
 
             # make a SeamlessData instance for gathering all the new data
-            constructed = SeamlessData(struct=self)
+            constructed = SeamlessData(struct=struct)
 
             # now check all the fields
             for field_name, instructions in struct.fields:
                 val = obj.get(field_name)
                 if val is None:
                     continue
-                typ, substruct, instructions = self.lookup(field_name)
+                typ, substruct, instructions = struct.lookup(field_name)
+                if instructions is None:
+                    raise SeamlessException("No instruction set defined for field at '{x}'".format(x=context + field_name))
                 coerce_name, coerce_fn = struct.get_coerce(instructions)
                 if coerce_fn is None:
                     raise SeamlessException("No coerce function defined for type '{x}' at '{c}'".format(x=coerce_name, c=context + field_name))
-                kwargs = self.kwargs(typ, "set", instructions)
+                kwargs = struct.kwargs(typ, "set", instructions)
                 constructed.set_single(field_name, val, coerce=coerce_fn, context=context, **kwargs)
 
             # next check all the objetcs (which will involve a recursive call to this function)
@@ -803,7 +815,7 @@ class Construct(object):
                 if type(val) != dict:
                     raise SeamlessException("Expected dict at '{x}' but found '{y}'".format(x=context + field_name, y=type(val)))
 
-                typ, substruct, instructions = self.lookup(field_name)
+                typ, substruct, instructions = struct.lookup(field_name)
 
                 if instructions is None:
                     # this is the lowest point at which we have instructions, so just accept the data structure as-is
@@ -824,13 +836,13 @@ class Construct(object):
                 if not isinstance(vals, list):
                     raise SeamlessException("Expecting list at '{x}' but found something else '{y}'".format(x=context + field_name, y=type(val)))
 
-                typ, substruct, instructions = self.lookup(field_name)
-                kwargs = self.kwargs(typ, "set", instructions)
+                typ, substruct, instructions = struct.lookup(field_name)
+                kwargs = struct.kwargs(typ, "set", instructions)
 
                 contains = instructions.get("contains")
                 if contains == "field":
                     # coerce all the values in the list
-                    coerce_name, coerce_fn = self.get_coerce(instructions)
+                    coerce_name, coerce_fn = struct.get_coerce(instructions)
                     if coerce_fn is None:
                         raise SeamlessException("No coerce function defined for type '{x}' at '{c}'".format(x=coerce_name, c=context + field_name))
 
