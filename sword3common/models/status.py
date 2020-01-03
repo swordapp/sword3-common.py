@@ -172,3 +172,11 @@ class StatusDocument(SeamlessMixin):
     @property
     def data(self):
         return self.__seamless__.data
+
+    @property
+    def object_url(self):
+        return self.__seamless__.get_single("@id")
+
+    @property
+    def metadata_url(self):
+        return self.__seamless__.get_single("metadata.@id")

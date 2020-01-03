@@ -12,6 +12,8 @@ METADATA_STRUCT = {
 class Metadata(SeamlessMixin):
     __SEAMLESS_STRUCT__ = METADATA_STRUCT
 
+    __SEAMLESS_ALLOW_OTHER_FIELDS__ = True
+
     def __init__(self, raw=None):
         super(Metadata, self).__init__(raw)
 
