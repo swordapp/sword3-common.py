@@ -148,6 +148,7 @@ class SeamlessMixin(object):
     __SEAMLESS_APPLY_STRUCT_ON_INIT__ = True
     __SEAMLESS_CHECK_REQUIRED_ON_INIT__ = True
     __SEAMLESS_SILENT_PRUNE__ = False
+    __SEAMLESS_ALLOW_OTHER_FIELDS__ = False
 
     def __init__(self,
                     raw=None,    # The raw data
@@ -158,6 +159,7 @@ class SeamlessMixin(object):
                     apply_struct_on_init=None,
                     check_required_on_init=None,
                     silent_prune=None,
+                    allow_other_fields=None,
                     *args, **kwargs
                  ):
 
@@ -168,6 +170,7 @@ class SeamlessMixin(object):
         self.__seamless_apply_struct_on_init__ = apply_struct_on_init if apply_struct_on_init is not None else self.__SEAMLESS_APPLY_STRUCT_ON_INIT__
         self.__seamless_check_required_on_init__ = check_required_on_init if check_required_on_init is not None else self.__SEAMLESS_CHECK_REQUIRED_ON_INIT__
         self.__seamless_silent_prune__ = silent_prune if silent_prune is not None else self.__SEAMLESS_SILENT_PRUNE__
+        self.__seamless_allow_other_fields__ = allow_other_fields if allow_other_fields is not None else self.__SEAMLESS_ALLOW_OTHER_FIELDS__
 
         struct = struct if struct is not None else self.__SEAMLESS_STRUCT__
         if isinstance(struct, list):
@@ -183,7 +186,8 @@ class SeamlessMixin(object):
                 self.__seamless_apply_struct_on_init__):
             self.__seamless__ = self.__seamless_struct__.construct(self.__seamless__.data,
                                     check_required=self.__seamless_check_required_on_init__,
-                                    silent_prune=self.__seamless_silent_prune__)
+                                    silent_prune=self.__seamless_silent_prune__,
+                                    allow_other_fields=self.__seamless_allow_other_fields__)
 
         super(SeamlessMixin, self).__init__(*args, **kwargs)
 
@@ -227,19 +231,29 @@ class SeamlessMixin(object):
         # FIXME: should also reflect all the constructor arguments
         return self.__class__(deepcopy(self.__seamless__.data))
 
-    def verify_against_struct(self, check_required=True, silent_prune=False):
+    def verify_against_struct(self, check_required=True, silent_prune=None, allow_other_fields=None):
+
+        silent_prune = silent_prune if silent_prune is not None else self.__seamless_silent_prune__
+        allow_other_fields = allow_other_fields if allow_other_fields is not None else self.__seamless_allow_other_fields__
+
         if (self.__seamless_struct__ is not None and
                 self.__seamless__ is not None):
             self.__seamless_struct__.construct(self.__seamless__.data,
                 check_required=check_required,
-                silent_prune=silent_prune)
+                silent_prune=silent_prune,
+                allow_other_fields=allow_other_fields)
 
-    def apply_struct(self, check_required=True, silent_prune=False):
+    def apply_struct(self, check_required=True, silent_prune=None, allow_other_fields=None):
+
+        silent_prune = silent_prune if silent_prune is not None else self.__seamless_silent_prune__
+        allow_other_fields = allow_other_fields if allow_other_fields is not None else self.__seamless_allow_other_fields__
+
         if (self.__seamless_struct__ is not None and
                 self.__seamless__ is not None):
             self.__seamless__ = self.__seamless_struct__.construct(self.__seamless__.data,
                 check_required=check_required,
-                silent_prune=silent_prune)
+                silent_prune=silent_prune,
+                allow_other_fields=allow_other_fields)
 
     def extend_struct(self, struct):
         self.__seamless_struct__ = Construct.merge(self.__seamless_struct__, struct)
@@ -596,6 +610,8 @@ class Construct(object):
     def merge(cls, target, *args):
         if not isinstance(target, Construct):
             merged = Construct(deepcopy(target), None, None)
+        else:
+            merged = target
 
         for source in args:
             if not isinstance(source, Construct):
@@ -610,10 +626,10 @@ class Construct(object):
             for field, instructions in source.lists:
                 merged.add_list(field, instructions, overwrite=False)
 
-            for r in source.get("required", []):
+            for r in source._definition.get("required", []):
                 merged.add_required(r)
 
-            for field, struct in source.get("structs", {}).items():
+            for field, struct in source._definition.get("structs", {}).items():
                 merged.add_substruct(field, struct, mode="merge")
 
         return merged
@@ -763,7 +779,7 @@ class Construct(object):
 
         return None, None, None
 
-    def construct(self, obj, check_required=True, silent_prune=False):
+    def construct(self, obj, check_required=True, silent_prune=False, allow_other_fields=False):
 
         def recurse(obj, struct, context):
             if obj is None:
@@ -781,9 +797,9 @@ class Construct(object):
                         raise SeamlessException("Field '{r}' is required but not present at '{c}'".format(r=r, c=context))
 
             # check that there are no fields that are not allowed
-            # Note that since the construct mechanism copies fields explicitly, silent_prune literally just turns off this
+            # Note that since the construct mechanism copies fields explicitly, silent_prune just turns off this
             # check
-            if not silent_prune:
+            if not allow_other_fields and not silent_prune:
                 allowed = struct.allowed
                 for k in keyset:
                     if k not in allowed:
@@ -807,7 +823,7 @@ class Construct(object):
                 kwargs = struct.kwargs(typ, "set", instructions)
                 constructed.set_single(field_name, val, coerce=coerce_fn, context=context, **kwargs)
 
-            # next check all the objetcs (which will involve a recursive call to this function)
+            # next check all the objects (which will involve a recursive call to this function)
             for field_name in struct.objects:
                 val = obj.get(field_name)
                 if val is None:
@@ -870,6 +886,13 @@ class Construct(object):
 
                 else:
                     raise SeamlessException("Cannot understand structure where list '{x}' elements contain '{y}'".format(x=context + field_name, y=contains))
+
+            # finally, if we allow other fields, make sure that they come across too
+            if allow_other_fields:
+                known = struct.allowed
+                for k, v in obj.items():
+                    if k not in known:
+                        constructed.set_single(k, v)
 
             # ensure any external references to the object persist
             obj.clear()
