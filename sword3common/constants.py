@@ -22,6 +22,8 @@ DIGEST_MD5 = "MD5"
 URI_METADATA = "http://purl.org/net/sword/3.0/types/Metadata"
 
 PACKAGE_BINARY = "http://purl.org/net/sword/3.0/package/Binary"
+PACKAGE_SWORDBAGIT = "http://purl.org/net/sword/3.0/package/SWORDBagIt"
+PACKAGE_SIMPLEZIP = "http://purl.org/net/sword/3.0/package/SimpleZip"
 
 CREATED = 201
 ACCEPTED = 202
