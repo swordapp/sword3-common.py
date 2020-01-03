@@ -20,3 +20,12 @@ class TestMetadata(TestCase):
 
         assert m.data.get("@context") == constants.JSON_LD_CONTEXT
         assert m.data.get("@type") == constants.TYPE_METADATA
+
+        m.verify_against_struct()
+        m.apply_struct()
+
+        assert m.get_field("whatever") == "value"
+        assert m.get_dc_field("dc:creator") == "me"
+        assert m.get_dc_field("contributor") == "them"
+        assert m.get_dcterms_field("dcterms:provenance") == "here"
+        assert m.get_dcterms_field("modified") == "now"

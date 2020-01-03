@@ -23,3 +23,7 @@ class TestService(TestCase):
 
         except SeamlessException as e:
             raise Exception(e.message)
+
+        s.__seamless__.set_single("whatever", "junk data")
+        with self.assertRaises(SeamlessException):
+            s.verify_against_struct()
