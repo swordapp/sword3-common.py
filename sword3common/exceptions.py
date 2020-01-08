@@ -1,0 +1,1 @@
+from sword3common.lib.seamless import SeamlessException
