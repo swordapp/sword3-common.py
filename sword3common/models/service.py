@@ -78,3 +78,7 @@ class ServiceDocument(SeamlessMixin):
     @property
     def service_url(self):
         return self.__seamless__.get_single("@id")
+
+    @service_url.setter
+    def service_url(self, url: str):
+        self.__seamless__.set_with_struct("@id", url)
