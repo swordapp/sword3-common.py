@@ -184,3 +184,7 @@ class StatusDocument(SeamlessMixin):
     @property
     def fileset_url(self):
         return self.__seamless__.get_single("fileSet.@id")
+
+    @property
+    def links(self):
+        return self.__seamless__.get_list("links")

@@ -3,8 +3,11 @@ from copy import deepcopy
 class StatusFixtureFactory(object):
 
     @classmethod
-    def status_document(self):
-        return deepcopy(STATUS_DOC)
+    def status_document(self, links=None):
+        doc = deepcopy(STATUS_DOC)
+        if links is not None:
+            doc["links"] = links
+        return doc
 
 
 STATUS_DOC = {
