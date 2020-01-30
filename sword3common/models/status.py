@@ -188,3 +188,6 @@ class StatusDocument(SeamlessMixin):
     @property
     def links(self):
         return self.__seamless__.get_list("links")
+
+    def list_links(self, rels):
+        return [link for link in self.links if set(link["rel"]) & set(rels)]
