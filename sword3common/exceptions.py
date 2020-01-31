@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 from http import HTTPStatus
 from typing import Dict, Tuple, Type
 
@@ -24,6 +25,10 @@ class SwordException(Exception, metaclass=SwordExceptionMeta):
     @classmethod
     def for_status_code_and_name(cls, status_code: int, name: str):
         return cls._registry[(status_code, name)]
+
+    def __init__(self, message: str = None):
+        self.message = message
+        self.timestamp = datetime.datetime.now(datetime.timezone.utc)
 
 
 class AuthenticationFailed(SwordException):
