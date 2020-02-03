@@ -2,33 +2,50 @@ from __future__ import annotations
 
 import datetime
 from http import HTTPStatus
-from typing import Dict, Tuple, Type
+from typing import cast, Dict, Tuple, Type, Optional
 
 from .lib.seamless import SeamlessException
 
 
 class SwordExceptionMeta(type):
+    _registry: Dict[Tuple[int, Optional[str]], Type[SwordException]] = {}
+
     def __new__(mcs, name, bases, attrs):
         cls = super().__new__(mcs, name, bases, attrs)
         if hasattr(cls, "status_code") and hasattr(cls, "name"):
-            cls._registry[(cls.status_code, cls.name)] = cls
+            cls = cast(Type[SwordException], cls)
+            # If this is the first time we've seen this status code, record it as the only exception for this code,
+            # irrespective of SWORD exception name. If we've seen it before, remove it.
+            if not any(True for status_code, name in cls._registry if status_code == cls.status_code):
+                cls._registry[(cls.status_code, None)] = cls
+            else:
+                cls._registry.pop((cls.status_code, None), None)
+
+                cls._registry[(cls.status_code, cls.name)] = cls
         return cls
 
 
 class SwordException(Exception, metaclass=SwordExceptionMeta):
-    _registry: Dict[Tuple[int, str], Type[SwordException]] = {}
 
     status_code: int
     name: str
     reason: str
 
     @classmethod
-    def for_status_code_and_name(cls, status_code: int, name: str):
+    def for_status_code_and_name(cls, status_code: int, name: Optional[str]):
         return cls._registry[(status_code, name)]
 
-    def __init__(self, message: str = None):
+    def __init__(self, message: str = None, *, response=None):
         self.message = message
         self.timestamp = datetime.datetime.now(datetime.timezone.utc)
+        self.response = response
+
+
+class UnexpectedSwordException(SwordException):
+    def __init__(self, *args, status_code: int, name: Optional[str], **kwargs):
+        self.status_code = status_code
+        self.name = name
+        super().__init__(*args, **kwargs)
 
 
 class AuthenticationFailed(SwordException):
