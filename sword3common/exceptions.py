@@ -144,6 +144,12 @@ class NotFound(SwordException):
     reason = "The resource could not be found"
 
 
+class Gone(NotFound):
+    status_code = HTTPStatus.GONE
+    name = "Gone"
+    reason = "The resource used to exist at the given URL, but has been removed."
+
+
 class OnBehalfOfNotAllowed(SwordException):
     status_code = HTTPStatus.PRECONDITION_FAILED
     name = "OnBehalfOfNotAllowed"
