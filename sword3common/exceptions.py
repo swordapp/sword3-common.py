@@ -48,6 +48,13 @@ class UnexpectedSwordException(SwordException):
         super().__init__(*args, **kwargs)
 
 
+# Exceptions that can be raised by a client
+
+class InvalidDataFromServer(SwordException):
+    pass
+
+# Exceptions that can be raised server-side
+
 class AuthenticationFailed(SwordException):
     status_code = HTTPStatus.FORBIDDEN
     name = "AuthenticationFailed"
