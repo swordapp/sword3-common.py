@@ -138,6 +138,12 @@ class MethodNotAllowed(SwordException):
     reason = "The request is for a method on a resource that is not permitted. This may be permanent, temporary, and may depend on the client’s credentials"
 
 
+class NotFound(SwordException):
+    status_code = HTTPStatus.NOT_FOUND
+    name = "NotFound"
+    reason = "The resource could not be found"
+
+
 class OnBehalfOfNotAllowed(SwordException):
     status_code = HTTPStatus.PRECONDITION_FAILED
     name = "OnBehalfOfNotAllowed"
