@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from sword3common.lib.seamless import SeamlessException
 from sword3common.models.status import StatusDocument
 from sword3common.test.fixtures.status import StatusFixtureFactory
 from sword3common.lib.seamless import SeamlessException
@@ -11,6 +12,6 @@ class TestStatus(TestCase):
         # a full one
         source = StatusFixtureFactory.status_document()
         try:
-            s = StatusDocument(source)
+            StatusDocument(source)
         except SeamlessException as e:
             raise Exception(e.message)

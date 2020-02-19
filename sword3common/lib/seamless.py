@@ -4,7 +4,7 @@ from copy import deepcopy
 from datetime import datetime
 
 ###############################################
-## Common coerce functions
+# Common coerce functions
 ###############################################
 
 
@@ -133,13 +133,9 @@ def to_bool(val):
 
 
 def to_datetime(val):
-    try:
-        datetime.strptime(val, "%Y-%m-%dT%H:%M:%SZ")
-        return val
-    except:
-        raise ValueError(
-            "Could not convert string {val} to UTC Datetime".format(val=val)
-        )
+    # Intentionally doesn't return the parsed value; just checks it's in the correct format.
+    datetime.strptime(val, "%Y-%m-%dT%H:%M:%SZ")
+    return val
 
 
 class SeamlessException(Exception):
@@ -383,8 +379,8 @@ class SeamlessData(object):
                 upper is not None and val > upper
             ):
                 raise SeamlessException(
-                    "Value '{x}' is outside the allowed range: {l} - {u} at '{y}'".format(
-                        x=val, l=lower, u=upper, y=context + "." + path
+                    "Value '{val}' is outside the allowed range: {lower} - {upper} at '{y}'".format(
+                        val=val, lower=lower, upper=upper, y=context + "." + path
                     )
                 )
 
@@ -547,11 +543,11 @@ class SeamlessData(object):
         :param prune:
         :return:
         """
-        l = self.get_list(path)
+        ret_val = self.get_list(path)
 
         removes = []
         i = 0
-        for entry in l:
+        for entry in ret_val:
             if val is not None:
                 if entry == val:
                     removes.append(i)
@@ -562,7 +558,7 @@ class SeamlessData(object):
                         type, struct, instructions = self._struct.lookup(path)
                         if struct is not None:
                             matchsub = struct.construct(matchsub, struct).data
-                    except:
+                    except Exception:
                         pass
 
                 matches = 0
@@ -575,9 +571,9 @@ class SeamlessData(object):
 
         removes.sort(reverse=True)
         for r in removes:
-            del l[r]
+            del ret_val[r]
 
-        if len(l) == 0 and prune:
+        if len(ret_val) == 0 and prune:
             self.delete(path, prune)
 
     def set_with_struct(self, path, val, check_required=True, silent_prune=False):
@@ -636,7 +632,7 @@ class SeamlessData(object):
 
     def get_property(self, path, wrapper=None):
         if wrapper is None:
-            wrapper = lambda x: x
+            wrapper = lambda x: x  # noqa: E731
 
         # pull the object from the structure, to find out what kind of retrieve it needs
         # (if there is a struct)
@@ -667,14 +663,13 @@ class SeamlessData(object):
         if type == "field" or type == "object":
             return wrapper(self.get_single(path, **kwargs))
         elif type == "list":
-            l = self.get_list(path, **kwargs)
-            return [wrapper(o) for o in l]
+            return [wrapper(o) for o in self.get_list(path, **kwargs)]
 
         return None
 
     def set_property(self, path, value, unwrapper=None):
         if unwrapper is None:
-            unwrapper = lambda x: x
+            unwrapper = lambda x: x  # noqa: E731
 
         # pull the object from the structure, to find out what kind of retrieve it needs
         # (if there is a struct)
