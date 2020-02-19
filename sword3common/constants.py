@@ -54,6 +54,7 @@ class Rel:
     OriginalDeposit = "http://purl.org/net/sword/3.0/terms/originalDeposit"
     DerivedResource = "http://purl.org/net/sword/3.0/terms/derivedResource"
     FormattedMetadata = "http://purl.org/net/sword/3.0/terms/formattedMetadata"
+    ByReferenceDeposit = "http://purl.org/net/sword/3.0/terms/byReferenceDeposit"
 
 
 class DepositState:
@@ -63,3 +64,4 @@ class DepositState:
 
 class FileState:
     Ingested = "http://purl.org/net/sword/3.0/filestate/ingested"
+    Pending = "http://purl.org/net/sword/3.0/filestate/pending"
