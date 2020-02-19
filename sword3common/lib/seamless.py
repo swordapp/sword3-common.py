@@ -422,7 +422,7 @@ class SeamlessData(object):
                     try:
                         type, struct, instructions = self._struct.lookup(path)
                         if struct is not None:
-                            matchsub = struct.construct(matchsub, struct)
+                            matchsub = struct.construct(matchsub, struct).data
                     except:
                         pass
 
@@ -454,13 +454,13 @@ class SeamlessData(object):
             if not isinstance(val, list):
                 val = [val]
             if substruct is not None:
-                val = [substruct.construct(x, check_required=check_required, silent_prune=silent_prune) for x in val]
+                val = [substruct.construct(x, check_required=check_required, silent_prune=silent_prune).data for x in val]
             kwargs = self._struct.kwargs(typ, "set", instructions)
             coerce_fn = self._struct.get_coerce(instructions)
             self.set_list(path, val, coerce=coerce_fn, **kwargs)
         elif typ == "object":
             if substruct is not None:
-                val = substruct.construct(val, check_required=check_required, silent_prune=silent_prune)
+                val = substruct.construct(val, check_required=check_required, silent_prune=silent_prune).data
             self.set_single(path, val)
         else:
             raise SeamlessException("Attempted to set_with_struct on path '{x}' but no such path exists in the struct".format(x=path))
@@ -470,7 +470,7 @@ class SeamlessData(object):
         if type != "list":
             raise SeamlessException("Attempt to add to list '{x}' failed - it is not a list element".format(x=path))
         if struct is not None:
-            val = struct.construct(val)
+            val = struct.construct(val).data
         kwargs = Construct.kwargs(type, "set", instructions)
         self.add_to_list(path, val, **kwargs)
 
