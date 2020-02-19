@@ -30,7 +30,7 @@ ACCEPTED = 202
 class DocumentType:
     ServiceDocument = "ServiceDocument"
     Metadata = "Metadata"
-    Status = "Status",
+    Status = ("Status",)
     ByReference = "ByReference"
     Temporary = "Temporary"
 

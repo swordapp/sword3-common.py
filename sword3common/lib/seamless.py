@@ -7,6 +7,7 @@ from datetime import datetime
 ## Common coerce functions
 ###############################################
 
+
 def to_utf8_unicode(val):
     if isinstance(val, str):
         return val
@@ -55,6 +56,7 @@ def intify(val):
 
     raise ValueError("Could not convert string to int: {x}".format(x=val))
 
+
 def floatify(val):
     # strip any characters that are outside the ascii range - they won't make up the float anyway
     # and this will get rid of things like strange currency marks
@@ -84,11 +86,15 @@ def floatify(val):
 
 def to_url(val):
     if not isinstance(val, str):
-        raise ValueError("Argument passed to to_url was not a string, but type '{t}': '{val}'".format(t=type(val),val=val))
+        raise ValueError(
+            "Argument passed to to_url was not a string, but type '{t}': '{val}'".format(
+                t=type(val), val=val
+            )
+        )
 
     val = val.strip()
 
-    if val == '':
+    if val == "":
         return val
 
     # parse with urlparse
@@ -109,13 +115,21 @@ def to_bool(val):
         return val
 
     if isinstance(val, str):
-        if val.lower() == 'true':
+        if val.lower() == "true":
             return True
-        elif val.lower() == 'false':
+        elif val.lower() == "false":
             return False
-        raise ValueError("Could not convert string {val} to boolean. Expecting string to either say 'true' or 'false' (not case-sensitive).".format(val=val))
+        raise ValueError(
+            "Could not convert string {val} to boolean. Expecting string to either say 'true' or 'false' (not case-sensitive).".format(
+                val=val
+            )
+        )
 
-    raise ValueError("Could not convert {val} to boolean. Expect either boolean or string.".format(val=val))
+    raise ValueError(
+        "Could not convert {val} to boolean. Expect either boolean or string.".format(
+            val=val
+        )
+    )
 
 
 def to_datetime(val):
@@ -123,7 +137,9 @@ def to_datetime(val):
         datetime.strptime(val, "%Y-%m-%dT%H:%M:%SZ")
         return val
     except:
-        raise ValueError("Could not convert string {val} to UTC Datetime".format(val=val))
+        raise ValueError(
+            "Could not convert string {val} to UTC Datetime".format(val=val)
+        )
 
 
 class SeamlessException(Exception):
@@ -138,13 +154,13 @@ class SeamlessMixin(object):
 
     __SEAMLESS_COERCE__ = {
         "unicode": to_utf8_unicode,
-        "unicode_upper" : to_unicode_upper,
-        "unicode_lower" : to_unicode_lower,
+        "unicode_upper": to_unicode_upper,
+        "unicode_lower": to_unicode_lower,
         "integer": intify,
         "float": floatify,
         "url": to_url,
         "bool": to_bool,
-        "datetime" : to_datetime
+        "datetime": to_datetime,
     }
 
     __SEAMLESS_DEFAULT_COERCE__ = "unicode"
@@ -156,44 +172,72 @@ class SeamlessMixin(object):
     __SEAMLESS_SILENT_PRUNE__ = False
     __SEAMLESS_ALLOW_OTHER_FIELDS__ = False
 
-    def __init__(self,
-                    raw=None,    # The raw data
-                    struct=None,
-                    coerce=None,
-                    properties=None,
-                    default_coerce=None,
-                    apply_struct_on_init=None,
-                    check_required_on_init=None,
-                    silent_prune=None,
-                    allow_other_fields=None,
-                    *args, **kwargs
-                 ):
+    def __init__(
+        self,
+        raw=None,  # The raw data
+        struct=None,
+        coerce=None,
+        properties=None,
+        default_coerce=None,
+        apply_struct_on_init=None,
+        check_required_on_init=None,
+        silent_prune=None,
+        allow_other_fields=None,
+        *args,
+        **kwargs
+    ):
 
         # set all the working properties
-        self.__seamless_coerce__ = coerce if coerce is not None else self.__SEAMLESS_COERCE__
-        self.__seamless_default_coerce__ = default_coerce if default_coerce is not None else self.__SEAMLESS_DEFAULT_COERCE__
-        self.__seamless_properties__ = properties if properties is not None else self.__SEAMLESS_PROPERTIES__
-        self.__seamless_apply_struct_on_init__ = apply_struct_on_init if apply_struct_on_init is not None else self.__SEAMLESS_APPLY_STRUCT_ON_INIT__
-        self.__seamless_check_required_on_init__ = check_required_on_init if check_required_on_init is not None else self.__SEAMLESS_CHECK_REQUIRED_ON_INIT__
-        self.__seamless_silent_prune__ = silent_prune if silent_prune is not None else self.__SEAMLESS_SILENT_PRUNE__
-        self.__seamless_allow_other_fields__ = allow_other_fields if allow_other_fields is not None else self.__SEAMLESS_ALLOW_OTHER_FIELDS__
+        self.__seamless_coerce__ = (
+            coerce if coerce is not None else self.__SEAMLESS_COERCE__
+        )
+        self.__seamless_default_coerce__ = (
+            default_coerce
+            if default_coerce is not None
+            else self.__SEAMLESS_DEFAULT_COERCE__
+        )
+        self.__seamless_properties__ = (
+            properties if properties is not None else self.__SEAMLESS_PROPERTIES__
+        )
+        self.__seamless_apply_struct_on_init__ = (
+            apply_struct_on_init
+            if apply_struct_on_init is not None
+            else self.__SEAMLESS_APPLY_STRUCT_ON_INIT__
+        )
+        self.__seamless_check_required_on_init__ = (
+            check_required_on_init
+            if check_required_on_init is not None
+            else self.__SEAMLESS_CHECK_REQUIRED_ON_INIT__
+        )
+        self.__seamless_silent_prune__ = (
+            silent_prune if silent_prune is not None else self.__SEAMLESS_SILENT_PRUNE__
+        )
+        self.__seamless_allow_other_fields__ = (
+            allow_other_fields
+            if allow_other_fields is not None
+            else self.__SEAMLESS_ALLOW_OTHER_FIELDS__
+        )
 
         struct = struct if struct is not None else self.__SEAMLESS_STRUCT__
         if isinstance(struct, list):
             struct = Construct.merge(*struct)
-        self.__seamless_struct__ = Construct(struct,
-                                              self.__seamless_coerce__,
-                                              self.__seamless_default_coerce__)
+        self.__seamless_struct__ = Construct(
+            struct, self.__seamless_coerce__, self.__seamless_default_coerce__
+        )
 
         self.__seamless__ = SeamlessData(raw, struct=self.__seamless_struct__)
 
-        if (self.__seamless_struct__ is not None and
-                raw is not None and
-                self.__seamless_apply_struct_on_init__):
-            self.__seamless__ = self.__seamless_struct__.construct(self.__seamless__.data,
-                                    check_required=self.__seamless_check_required_on_init__,
-                                    silent_prune=self.__seamless_silent_prune__,
-                                    allow_other_fields=self.__seamless_allow_other_fields__)
+        if (
+            self.__seamless_struct__ is not None
+            and raw is not None
+            and self.__seamless_apply_struct_on_init__
+        ):
+            self.__seamless__ = self.__seamless_struct__.construct(
+                self.__seamless__.data,
+                check_required=self.__seamless_check_required_on_init__,
+                silent_prune=self.__seamless_silent_prune__,
+                allow_other_fields=self.__seamless_allow_other_fields__,
+            )
 
         super(SeamlessMixin, self).__init__(*args, **kwargs)
 
@@ -214,7 +258,7 @@ class SeamlessMixin(object):
                 wrap = prop.get("wrapper")
                 return self.__seamless__.get_property(path, wrap)
 
-        raise AttributeError('{name} is not set'.format(name=name))
+        raise AttributeError("{name} is not set".format(name=name))
 
     def __setattr__(self, name, value):
         if hasattr(self.__class__, name):
@@ -239,29 +283,47 @@ class SeamlessMixin(object):
         # FIXME: should also reflect all the constructor arguments
         return self.__class__(deepcopy(self.__seamless__.data))
 
-    def verify_against_struct(self, check_required=True, silent_prune=None, allow_other_fields=None):
+    def verify_against_struct(
+        self, check_required=True, silent_prune=None, allow_other_fields=None
+    ):
 
-        silent_prune = silent_prune if silent_prune is not None else self.__seamless_silent_prune__
-        allow_other_fields = allow_other_fields if allow_other_fields is not None else self.__seamless_allow_other_fields__
+        silent_prune = (
+            silent_prune if silent_prune is not None else self.__seamless_silent_prune__
+        )
+        allow_other_fields = (
+            allow_other_fields
+            if allow_other_fields is not None
+            else self.__seamless_allow_other_fields__
+        )
 
-        if (self.__seamless_struct__ is not None and
-                self.__seamless__ is not None):
-            self.__seamless_struct__.construct(self.__seamless__.data,
+        if self.__seamless_struct__ is not None and self.__seamless__ is not None:
+            self.__seamless_struct__.construct(
+                self.__seamless__.data,
                 check_required=check_required,
                 silent_prune=silent_prune,
-                allow_other_fields=allow_other_fields)
+                allow_other_fields=allow_other_fields,
+            )
 
-    def apply_struct(self, check_required=True, silent_prune=None, allow_other_fields=None):
+    def apply_struct(
+        self, check_required=True, silent_prune=None, allow_other_fields=None
+    ):
 
-        silent_prune = silent_prune if silent_prune is not None else self.__seamless_silent_prune__
-        allow_other_fields = allow_other_fields if allow_other_fields is not None else self.__seamless_allow_other_fields__
+        silent_prune = (
+            silent_prune if silent_prune is not None else self.__seamless_silent_prune__
+        )
+        allow_other_fields = (
+            allow_other_fields
+            if allow_other_fields is not None
+            else self.__seamless_allow_other_fields__
+        )
 
-        if (self.__seamless_struct__ is not None and
-                self.__seamless__ is not None):
-            self.__seamless__ = self.__seamless_struct__.construct(self.__seamless__.data,
+        if self.__seamless_struct__ is not None and self.__seamless__ is not None:
+            self.__seamless__ = self.__seamless_struct__.construct(
+                self.__seamless__.data,
                 check_required=check_required,
                 silent_prune=silent_prune,
-                allow_other_fields=allow_other_fields)
+                allow_other_fields=allow_other_fields,
+            )
 
     def extend_struct(self, struct):
         self.__seamless_struct__ = Construct.merge(self.__seamless_struct__, struct)
@@ -283,26 +345,48 @@ class SeamlessData(object):
             # otherwise return the value
             return val
 
-    def set_single(self, path, val, coerce=None, allow_coerce_failure=False, allowed_values=None, allowed_range=None,
-                    allow_none=True, ignore_none=False, context=""):
+    def set_single(
+        self,
+        path,
+        val,
+        coerce=None,
+        allow_coerce_failure=False,
+        allowed_values=None,
+        allowed_range=None,
+        allow_none=True,
+        ignore_none=False,
+        context="",
+    ):
 
         if val is None and ignore_none:
             return
 
         if val is None and not allow_none:
-            raise SeamlessException("NoneType is not allowed at '{x}'".format(x=context + "." + path))
+            raise SeamlessException(
+                "NoneType is not allowed at '{x}'".format(x=context + "." + path)
+            )
 
         # first see if we need to coerce the value (and don't coerce None)
         if coerce is not None and val is not None:
             val = self._coerce(val, coerce, accept_failure=allow_coerce_failure)
 
         if allowed_values is not None and val not in allowed_values:
-            raise SeamlessException("Value '{x}' is not permitted at '{y}'".format(x=val, y=context + "." + path))
+            raise SeamlessException(
+                "Value '{x}' is not permitted at '{y}'".format(
+                    x=val, y=context + "." + path
+                )
+            )
 
         if allowed_range is not None:
             lower, upper = allowed_range
-            if (lower is not None and val < lower) or (upper is not None and val > upper):
-                raise SeamlessException("Value '{x}' is outside the allowed range: {l} - {u} at '{y}'".format(x=val, l=lower, u=upper, y=context + "." + path))
+            if (lower is not None and val < lower) or (
+                upper is not None and val > upper
+            ):
+                raise SeamlessException(
+                    "Value '{x}' is outside the allowed range: {l} - {u} at '{y}'".format(
+                        x=val, l=lower, u=upper, y=context + "." + path
+                    )
+                )
 
         # now set it at the path point in the object
         self._set_path(path, val)
@@ -321,10 +405,17 @@ class SeamlessData(object):
                 else:
                     del context[p]
                     if prune and len(stack) > 0:
-                        stack.pop() # the last element was just deleted
+                        stack.pop()  # the last element was just deleted
                         self._prune_stack(stack)
 
-    def get_list(self, path, coerce=None, by_reference=True, allow_coerce_failure=True, context=""):
+    def get_list(
+        self,
+        path,
+        coerce=None,
+        by_reference=True,
+        allow_coerce_failure=True,
+        context="",
+    ):
         # get the value at the point in the object
         val = self._get_path(path, None)
 
@@ -340,11 +431,18 @@ class SeamlessData(object):
 
         # check that the val is actually a list
         if not isinstance(val, list):
-            raise SeamlessException("Expecting a list at '{x}' but found '{y}'".format(x=context + "." + path, y=val))
+            raise SeamlessException(
+                "Expecting a list at '{x}' but found '{y}'".format(
+                    x=context + "." + path, y=val
+                )
+            )
 
         # if there is a value, do we want to coerce each of them
         if coerce is not None:
-            coerced = [self._coerce(v, coerce, accept_failure=allow_coerce_failure) for v in val]
+            coerced = [
+                self._coerce(v, coerce, accept_failure=allow_coerce_failure)
+                for v in val
+            ]
             if by_reference:
                 self.set_single(path, coerced)
             return coerced
@@ -354,8 +452,16 @@ class SeamlessData(object):
             else:
                 return deepcopy(val)
 
-    def set_list(self, path, val, coerce=None, allow_coerce_failure=False, allow_none=True,
-                 ignore_none=False, context=""):
+    def set_list(
+        self,
+        path,
+        val,
+        coerce=None,
+        allow_coerce_failure=False,
+        allow_none=True,
+        ignore_none=False,
+        context="",
+    ):
         # first ensure that the value is a list
         if not isinstance(val, list):
             val = [val]
@@ -366,10 +472,18 @@ class SeamlessData(object):
         for v in val:
             if v is None and not allow_none:
                 if not ignore_none:
-                    raise SeamlessException("NoneType is not allowed at '{x}'".format(x=context + "." + path))
+                    raise SeamlessException(
+                        "NoneType is not allowed at '{x}'".format(
+                            x=context + "." + path
+                        )
+                    )
 
         # now coerce each of the values, stripping out Nones if necessary
-        val = [self._coerce(v, coerce, accept_failure=allow_coerce_failure) for v in val if v is not None or not ignore_none]
+        val = [
+            self._coerce(v, coerce, accept_failure=allow_coerce_failure)
+            for v in val
+            if v is not None or not ignore_none
+        ]
 
         # check that the cleaned array isn't empty, and if it is behave appropriately
         if len(val) == 0:
@@ -379,18 +493,33 @@ class SeamlessData(object):
                 return
             elif not allow_none:
                 # if we are not ignoring nones, and not allowing them, raise an error
-                raise SeamlessException("Empty array not permitted at '{x}'".format(x=context + "." + path))
+                raise SeamlessException(
+                    "Empty array not permitted at '{x}'".format(x=context + "." + path)
+                )
 
         # now set it on the path
         self._set_path(path, val)
 
-    def add_to_list(self, path, val, coerce=None, allow_coerce_failure=False, allow_none=False,
-                    ignore_none=True, unique=False, context=""):
+    def add_to_list(
+        self,
+        path,
+        val,
+        coerce=None,
+        allow_coerce_failure=False,
+        allow_none=False,
+        ignore_none=True,
+        unique=False,
+        context="",
+    ):
         if val is None and ignore_none:
             return
 
         if val is None and not allow_none:
-            raise SeamlessException("NoneType is not allowed in list at '{x}'".format(x=context + "." + path))
+            raise SeamlessException(
+                "NoneType is not allowed in list at '{x}'".format(
+                    x=context + "." + path
+                )
+            )
 
         # first coerce the value
         if coerce is not None:
@@ -405,7 +534,9 @@ class SeamlessData(object):
         # otherwise, append
         current.append(val)
 
-    def delete_from_list(self, path, val=None, matchsub=None, prune=True, apply_struct_on_matchsub=True):
+    def delete_from_list(
+        self, path, val=None, matchsub=None, prune=True, apply_struct_on_matchsub=True
+    ):
         """
         Note that matchsub will be coerced with the struct if it exists, to ensure
         that the match is done correctly
@@ -455,14 +586,23 @@ class SeamlessData(object):
         if typ == "field":
             coerce_name, coerce_fn = self._struct.get_coerce(instructions)
             if coerce_fn is None:
-                raise SeamlessException("No coersion function defined for type '{x}' at '{c}'".format(x=coerce_name, c=path))
+                raise SeamlessException(
+                    "No coersion function defined for type '{x}' at '{c}'".format(
+                        x=coerce_name, c=path
+                    )
+                )
             kwargs = self._struct.kwargs(typ, "set", instructions)
             self.set_single(path, val, coerce=coerce_fn, **kwargs)
         elif typ == "list":
             if not isinstance(val, list):
                 val = [val]
             if substruct is not None:
-                val = [substruct.construct(x, check_required=check_required, silent_prune=silent_prune).data for x in val]
+                val = [
+                    substruct.construct(
+                        x, check_required=check_required, silent_prune=silent_prune
+                    ).data
+                    for x in val
+                ]
             kwargs = self._struct.kwargs(typ, "set", instructions)
             coerce_fn = None
             if instructions.get("contains") != "object":
@@ -470,15 +610,25 @@ class SeamlessData(object):
             self.set_list(path, val, coerce=coerce_fn, **kwargs)
         elif typ == "object":
             if substruct is not None:
-                val = substruct.construct(val, check_required=check_required, silent_prune=silent_prune).data
+                val = substruct.construct(
+                    val, check_required=check_required, silent_prune=silent_prune
+                ).data
             self.set_single(path, val)
         else:
-            raise SeamlessException("Attempted to set_with_struct on path '{x}' but no such path exists in the struct".format(x=path))
+            raise SeamlessException(
+                "Attempted to set_with_struct on path '{x}' but no such path exists in the struct".format(
+                    x=path
+                )
+            )
 
     def add_to_list_with_struct(self, path, val):
         type, struct, instructions = self._struct.lookup(path)
         if type != "list":
-            raise SeamlessException("Attempt to add to list '{x}' failed - it is not a list element".format(x=path))
+            raise SeamlessException(
+                "Attempt to add to list '{x}' failed - it is not a list element".format(
+                    x=path
+                )
+            )
         if struct is not None:
             val = struct.construct(val).data
         kwargs = Construct.kwargs(type, "set", instructions)
@@ -486,7 +636,7 @@ class SeamlessData(object):
 
     def get_property(self, path, wrapper=None):
         if wrapper is None:
-            wrapper = lambda x : x
+            wrapper = lambda x: x
 
         # pull the object from the structure, to find out what kind of retrieve it needs
         # (if there is a struct)
@@ -524,7 +674,7 @@ class SeamlessData(object):
 
     def set_property(self, path, value, unwrapper=None):
         if unwrapper is None:
-            unwrapper = lambda x : x
+            unwrapper = lambda x: x
 
         # pull the object from the structure, to find out what kind of retrieve it needs
         # (if there is a struct)
@@ -594,7 +744,11 @@ class SeamlessData(object):
         except (ValueError, TypeError):
             if accept_failure:
                 return val
-            raise SeamlessException("Coerce with '{x}' failed on '{y}' of type '{z}'".format(x=coerce, y=val, z=type(val)))
+            raise SeamlessException(
+                "Coerce with '{x}' failed on '{y}' of type '{z}'".format(
+                    x=coerce, y=val, z=type(val)
+                )
+            )
 
     def _prune_stack(self, stack):
         while len(stack) > 0:
@@ -669,7 +823,9 @@ class Construct(object):
             for k, v in kwargs.items():
                 # basically everything is a "set" argument unless explicitly stated to be a "get" argument
                 if not k.startswith("get__"):
-                    if k.startswith("set__"):    # if it starts with the set__ prefix, remove it
+                    if k.startswith(
+                        "set__"
+                    ):  # if it starts with the set__ prefix, remove it
                         k = k[5:]
                     nk[k] = v
         elif dir == "get":
@@ -696,9 +852,11 @@ class Construct(object):
 
     @property
     def allowed(self):
-        return list(self._definition.get("fields", {}).keys()) + \
-                self._definition.get("objects", []) + \
-                list(self._definition.get("lists", {}).keys())
+        return (
+            list(self._definition.get("fields", {}).keys())
+            + self._definition.get("objects", [])
+            + list(self._definition.get("lists", {}).keys())
+        )
 
     @property
     def objects(self):
@@ -727,7 +885,9 @@ class Construct(object):
             self._definition["structs"][field] = deepcopy(struct)
         else:
             # recursively merge
-            self._definition["structs"][field] = Construct.merge(self._definition["structs"][field], struct).raw
+            self._definition["structs"][field] = Construct.merge(
+                self._definition["structs"][field], struct
+            ).raw
 
     @property
     def fields(self):
@@ -793,13 +953,18 @@ class Construct(object):
 
         return None, None, None
 
-    def construct(self, obj, check_required=True, silent_prune=False, allow_other_fields=False):
-
+    def construct(
+        self, obj, check_required=True, silent_prune=False, allow_other_fields=False
+    ):
         def recurse(obj, struct, context):
             if obj is None:
                 return None
             if not isinstance(obj, dict):
-                raise SeamlessException("Expected a dict at '{c}' but found something else instead".format(c=context))
+                raise SeamlessException(
+                    "Expected a dict at '{c}' but found something else instead".format(
+                        c=context
+                    )
+                )
 
             keyset = obj.keys()
 
@@ -808,7 +973,11 @@ class Construct(object):
             if check_required:
                 for r in struct.required:
                     if r not in keyset:
-                        raise SeamlessException("Field '{r}' is required but not present at '{c}'".format(r=r, c=context))
+                        raise SeamlessException(
+                            "Field '{r}' is required but not present at '{c}'".format(
+                                r=r, c=context
+                            )
+                        )
 
             # check that there are no fields that are not allowed
             # Note that since the construct mechanism copies fields explicitly, silent_prune just turns off this
@@ -818,7 +987,9 @@ class Construct(object):
                 for k in keyset:
                     if k not in allowed:
                         c = context if context != "" else "root"
-                        raise SeamlessException("Field '{k}' is not permitted at '{c}'".format(k=k, c=c))
+                        raise SeamlessException(
+                            "Field '{k}' is not permitted at '{c}'".format(k=k, c=c)
+                        )
 
             # make a SeamlessData instance for gathering all the new data
             constructed = SeamlessData(struct=struct)
@@ -830,12 +1001,22 @@ class Construct(object):
                     continue
                 typ, substruct, instructions = struct.lookup(field_name)
                 if instructions is None:
-                    raise SeamlessException("No instruction set defined for field at '{x}'".format(x=context + field_name))
+                    raise SeamlessException(
+                        "No instruction set defined for field at '{x}'".format(
+                            x=context + field_name
+                        )
+                    )
                 coerce_name, coerce_fn = struct.get_coerce(instructions)
                 if coerce_fn is None:
-                    raise SeamlessException("No coerce function defined for type '{x}' at '{c}'".format(x=coerce_name, c=context + field_name))
+                    raise SeamlessException(
+                        "No coerce function defined for type '{x}' at '{c}'".format(
+                            x=coerce_name, c=context + field_name
+                        )
+                    )
                 kwargs = struct.kwargs(typ, "set", instructions)
-                constructed.set_single(field_name, val, coerce=coerce_fn, context=context, **kwargs)
+                constructed.set_single(
+                    field_name, val, coerce=coerce_fn, context=context, **kwargs
+                )
 
             # next check all the objects (which will involve a recursive call to this function)
             for field_name in struct.objects:
@@ -843,7 +1024,11 @@ class Construct(object):
                 if val is None:
                     continue
                 if type(val) != dict:
-                    raise SeamlessException("Expected dict at '{x}' but found '{y}'".format(x=context + field_name, y=type(val)))
+                    raise SeamlessException(
+                        "Expected dict at '{x}' but found '{y}'".format(
+                            x=context + field_name, y=type(val)
+                        )
+                    )
 
                 typ, substruct, instructions = struct.lookup(field_name)
 
@@ -853,7 +1038,9 @@ class Construct(object):
                     constructed.set_single(field_name, deepcopy(val))
                 else:
                     # we need to recurse further down
-                    beneath = recurse(val, substruct, context=context + field_name + ".")
+                    beneath = recurse(
+                        val, substruct, context=context + field_name + "."
+                    )
 
                     # what we get back is the correct sub-data structure, which we can then store
                     constructed.set_single(field_name, beneath)
@@ -864,7 +1051,11 @@ class Construct(object):
                 if vals is None:
                     continue
                 if not isinstance(vals, list):
-                    raise SeamlessException("Expecting list at '{x}' but found something else '{y}'".format(x=context + field_name, y=type(val)))
+                    raise SeamlessException(
+                        "Expecting list at '{x}' but found something else '{y}'".format(
+                            x=context + field_name, y=type(val)
+                        )
+                    )
 
                 typ, substruct, instructions = struct.lookup(field_name)
                 kwargs = struct.kwargs(typ, "set", instructions)
@@ -874,11 +1065,17 @@ class Construct(object):
                     # coerce all the values in the list
                     coerce_name, coerce_fn = struct.get_coerce(instructions)
                     if coerce_fn is None:
-                        raise SeamlessException("No coerce function defined for type '{x}' at '{c}'".format(x=coerce_name, c=context + field_name))
+                        raise SeamlessException(
+                            "No coerce function defined for type '{x}' at '{c}'".format(
+                                x=coerce_name, c=context + field_name
+                            )
+                        )
 
                     for i in range(len(vals)):
                         val = vals[i]
-                        constructed.add_to_list(field_name, val, coerce=coerce_fn, **kwargs)
+                        constructed.add_to_list(
+                            field_name, val, coerce=coerce_fn, **kwargs
+                        )
 
                 elif contains == "object":
                     # for each object in the list, send it for construction
@@ -886,20 +1083,32 @@ class Construct(object):
                         val = vals[i]
 
                         if type(val) != dict:
-                            raise SeamlessException("Expected dict at '{x}[{p}]' but got '{y}'".format(x=context + field_name, y=type(val), p=i))
+                            raise SeamlessException(
+                                "Expected dict at '{x}[{p}]' but got '{y}'".format(
+                                    x=context + field_name, y=type(val), p=i
+                                )
+                            )
 
                         substruct = struct.substruct(field_name)
                         if substruct is None:
                             constructed.add_to_list(field_name, deepcopy(val))
                         else:
                             # we need to recurse further down
-                            beneath = recurse(val, substruct, context=context + field_name + "[" + str(i) + "].")
+                            beneath = recurse(
+                                val,
+                                substruct,
+                                context=context + field_name + "[" + str(i) + "].",
+                            )
 
                             # what we get back is the correct sub-data structure, which we can then store
                             constructed.add_to_list(field_name, beneath)
 
                 else:
-                    raise SeamlessException("Cannot understand structure where list '{x}' elements contain '{y}'".format(x=context + field_name, y=contains))
+                    raise SeamlessException(
+                        "Cannot understand structure where list '{x}' elements contain '{y}'".format(
+                            x=context + field_name, y=contains
+                        )
+                    )
 
             # finally, if we allow other fields, make sure that they come across too
             if allow_other_fields:
@@ -917,40 +1126,67 @@ class Construct(object):
         return SeamlessData(ready, struct=self)
 
     def validate(self):
-
         def recurse(struct, context):
             # check that only the allowed keys are present
             keys = struct.raw.keys()
             for k in keys:
                 if k not in ["fields", "objects", "lists", "required", "structs"]:
-                    raise SeamlessException("Key '{x}' present in struct at '{y}', but is not permitted".format(x=k, y=context))
+                    raise SeamlessException(
+                        "Key '{x}' present in struct at '{y}', but is not permitted".format(
+                            x=k, y=context
+                        )
+                    )
 
             # now go through and make sure the fields are the right shape:
             for field_name, instructions in struct.fields:
-                for k,v in instructions.items():
+                for k, v in instructions.items():
                     if not isinstance(v, list) and not isinstance(v, str):
-                        raise SeamlessException("Argument '{a}' in field '{b}' at '{c}' is not a string or list".format(a=k, b=field_name, c=context))
+                        raise SeamlessException(
+                            "Argument '{a}' in field '{b}' at '{c}' is not a string or list".format(
+                                a=k, b=field_name, c=context
+                            )
+                        )
 
             # then make sure the objects are ok
             for o in struct.objects:
                 if not isinstance(o, str):
-                    raise SeamlessException("There is a non-string value in the object list at '{y}'".format(y=context))
+                    raise SeamlessException(
+                        "There is a non-string value in the object list at '{y}'".format(
+                            y=context
+                        )
+                    )
 
             # make sure the lists are correct
             for field_name, instructions in struct.lists:
                 contains = instructions.get("contains")
                 if contains is None:
-                    raise SeamlessException("No 'contains' argument in list definition for field '{x}' at '{y}'".format(x=field_name, y=context))
+                    raise SeamlessException(
+                        "No 'contains' argument in list definition for field '{x}' at '{y}'".format(
+                            x=field_name, y=context
+                        )
+                    )
                 if contains not in ["object", "field"]:
-                    raise SeamlessException("'contains' argument in list '{x}' at '{y}' contains illegal value '{z}'".format(x=field_name, y=context, z=contains))
-                for k,v in instructions.items():
+                    raise SeamlessException(
+                        "'contains' argument in list '{x}' at '{y}' contains illegal value '{z}'".format(
+                            x=field_name, y=context, z=contains
+                        )
+                    )
+                for k, v in instructions.items():
                     if not isinstance(v, list) and not isinstance(v, str):
-                        raise SeamlessException("Argument '{a}' in list '{b}' at '{c}' is not a string or list".format(a=k, b=field_name, c=context))
+                        raise SeamlessException(
+                            "Argument '{a}' in list '{b}' at '{c}' is not a string or list".format(
+                                a=k, b=field_name, c=context
+                            )
+                        )
 
             # make sure the requireds are correct
             for o in struct.required:
                 if not isinstance(o, str):
-                    raise SeamlessException("There is a non-string value in the required list at '{y}'".format(y=context))
+                    raise SeamlessException(
+                        "There is a non-string value in the required list at '{y}'".format(
+                            y=context
+                        )
+                    )
 
             # now do the structs, which will involve some recursion
             substructs = struct.substructs
@@ -959,7 +1195,11 @@ class Construct(object):
             possibles = struct.objects + list(struct.list_names)
             for s in substructs:
                 if s not in possibles:
-                    raise SeamlessException("struct contains key '{a}' which is not listed in object or list definitions at '{x}'".format(a=s, x=context))
+                    raise SeamlessException(
+                        "struct contains key '{a}' which is not listed in object or list definitions at '{x}'".format(
+                            a=s, x=context
+                        )
+                    )
 
             # now recurse into each struct
             for k, v in substructs.items():

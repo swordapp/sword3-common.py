@@ -2,12 +2,13 @@ from sword3common.lib.seamless import SeamlessMixin
 from sword3common import constants
 
 METADATA_STRUCT = {
-    "fields" : {
-        "@context" : {"coerce" : "unicode"},
-        "@id" : {"coerce" : "unicode"},
-        "@type" : {"coerce" : "unicode"},
+    "fields": {
+        "@context": {"coerce": "unicode"},
+        "@id": {"coerce": "unicode"},
+        "@type": {"coerce": "unicode"},
     }
 }
+
 
 class Metadata(SeamlessMixin):
     __SEAMLESS_STRUCT__ = METADATA_STRUCT

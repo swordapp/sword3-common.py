@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from sword3common.lib.disposition import ContentDisposition
 
+
 class TestMetadata(TestCase):
     def test_01_disposition(self):
         cd = ContentDisposition.metadata_upload()

@@ -2,27 +2,26 @@ from sword3common.lib.seamless import SeamlessMixin
 from sword3common import constants
 
 SEGMENTED_FILE_UPLOAD_STRUCT = {
-    "fields" : {
-        "@context" : {"coerce" : "unicode"},
-        "@id" : {"coerce" : "unicode"},
-        "@type" : {"coerce" : "unicode"}
+    "fields": {
+        "@context": {"coerce": "unicode"},
+        "@id": {"coerce": "unicode"},
+        "@type": {"coerce": "unicode"},
     },
-    "objects" : [
-        "segments"
-    ],
-    "structs" : {
-        "segments" : {
-            "fields" : {
-                "size" : {"coerce" : "integer"},
-                "segment_size" : {"coerce" : "integer"}
+    "objects": ["segments"],
+    "structs": {
+        "segments": {
+            "fields": {
+                "size": {"coerce": "integer"},
+                "segment_size": {"coerce": "integer"},
             },
-            "lists" : {
-                "received" : {"contains" : "field", "coerce" : "integer"},
-                "expecting" : {"contains" : "field", "coerce" : "integer"}
-            }
+            "lists": {
+                "received": {"contains": "field", "coerce": "integer"},
+                "expecting": {"contains": "field", "coerce": "integer"},
+            },
         }
-    }
+    },
 }
+
 
 class SegmentedFileUpload(SeamlessMixin):
     __SEAMLESS_STRUCT__ = SEGMENTED_FILE_UPLOAD_STRUCT

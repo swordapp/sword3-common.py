@@ -5,6 +5,7 @@ from sword3common.test.fixtures.status import StatusFixtureFactory
 from sword3common.lib.seamless import SeamlessException
 from sword3common import constants
 
+
 class TestStatus(TestCase):
     def test_01_status_document(self):
         # a full one
