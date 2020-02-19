@@ -5,6 +5,7 @@ JSON_LD_CONTEXT = "https://swordapp.github.io/swordv3/swordv3.jsonld"
 TYPE_SERVICE_DOCUMENT = "ServiceDocument"
 TYPE_METADATA = "Metadata"
 TYPE_STATUS = "Status"
+TYPE_BY_REFERENCE = "ByReference"
 
 DISPOSITION_SEGMENT_INIT = "disposition_segment_init"
 DISPOSITION_DEPOSIT = "disposition_deposit"

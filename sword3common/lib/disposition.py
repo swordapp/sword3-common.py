@@ -31,6 +31,10 @@ class ContentDisposition(object):
     def package_upload(cls, filename):
         return ContentDisposition(constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_PACKAGE, filename=filename)
 
+    @classmethod
+    def by_reference_upload(cls):
+        return ContentDisposition(constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_BR)
+
     def serialise(self):
         disp_type = "attachment"
         if self._upload_type == constants.DISPOSITION_SEGMENT_INIT:
