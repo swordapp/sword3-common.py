@@ -1,4 +1,4 @@
-from __future__ import annotations
+# from __future__ import annotations
 
 import datetime
 from http import HTTPStatus
@@ -8,12 +8,12 @@ from .lib.seamless import SeamlessException
 
 
 class SwordExceptionMeta(type):
-    _registry: Dict[Tuple[int, Optional[str]], Type[SwordException]] = {}
+    _registry={} #: Dict[Tuple[int, Optional[str]], Type[SwordException]] = {}
 
     def __new__(mcs, name, bases, attrs):
         cls = super().__new__(mcs, name, bases, attrs)
         if hasattr(cls, "status_code") and hasattr(cls, "name"):
-            cls = cast(Type[SwordException], cls)
+            #cls = cast(Type[SwordException], cls)
             # If this is the first time we've seen this status code, record it as the only exception for this code,
             # irrespective of SWORD exception name. If we've seen it before, remove it.
             if not any(True for status_code, name in cls._registry if status_code == cls.status_code):
@@ -27,9 +27,9 @@ class SwordExceptionMeta(type):
 
 class SwordException(Exception, metaclass=SwordExceptionMeta):
 
-    status_code: int
-    name: str
-    reason: str
+    status_code=None#: int
+    name=None#: str
+    reason=None#: str
 
     @classmethod
     def for_status_code_and_name(cls, status_code: int, name: Optional[str]):
