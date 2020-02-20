@@ -1,5 +1,4 @@
 # from __future__ import annotations
-
 import datetime
 from http import HTTPStatus
 from typing import cast, Dict, Tuple, Type, Optional

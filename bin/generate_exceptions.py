@@ -9,7 +9,6 @@ If the spec changes, use this script to regenerate all the SwordException subcla
 
 import collections
 import textwrap
-from functools import cmp_to_key
 from http import HTTPStatus
 
 import requests
