@@ -122,7 +122,7 @@ STATUS_STRUCT = {
 class StatusDocument(SeamlessMixin):
     __SEAMLESS_STRUCT__ = STATUS_STRUCT
 
-    __SEAMLESS_PROPERTIES__ = {}
+    __SEAMLESS_PROPERTIES__ = {}  # type: dict
 
     def __init__(self, raw=None):
         super(StatusDocument, self).__init__(raw)

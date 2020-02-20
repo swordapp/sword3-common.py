@@ -146,7 +146,7 @@ class SeamlessException(Exception):
 
 class SeamlessMixin(object):
 
-    __SEAMLESS_STRUCT__ = None
+    __SEAMLESS_STRUCT__ = None  # type: dict
 
     __SEAMLESS_COERCE__ = {
         "unicode": to_utf8_unicode,
@@ -161,7 +161,7 @@ class SeamlessMixin(object):
 
     __SEAMLESS_DEFAULT_COERCE__ = "unicode"
 
-    __SEAMLESS_PROPERTIES__ = None
+    __SEAMLESS_PROPERTIES__ = None  # type: dict
 
     __SEAMLESS_APPLY_STRUCT_ON_INIT__ = True
     __SEAMLESS_CHECK_REQUIRED_ON_INIT__ = True
