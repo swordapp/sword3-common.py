@@ -5,3 +5,5 @@ from sword3common.models.service import ServiceDocument
 from sword3common.models.status import StatusDocument
 from sword3common.models.byreference import ByReference
 from sword3common.models.mdbr import MetadataAndByReference
+from sword3common.models.segemented_upload import SegmentedFileUpload
+from sword3common.models.error import Error
