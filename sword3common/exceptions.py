@@ -5,7 +5,7 @@ from http import HTTPStatus
 from typing import cast, Dict, Tuple, Type, Optional
 
 from .lib.seamless import SeamlessException
-
+from . import constants
 
 class SwordExceptionMeta(type):
     _registry={} #: Dict[Tuple[int, Optional[str]], Type[SwordException]] = {}
@@ -13,15 +13,7 @@ class SwordExceptionMeta(type):
     def __new__(mcs, name, bases, attrs):
         cls = super().__new__(mcs, name, bases, attrs)
         if hasattr(cls, "status_code") and hasattr(cls, "name"):
-            #cls = cast(Type[SwordException], cls)
-            # If this is the first time we've seen this status code, record it as the only exception for this code,
-            # irrespective of SWORD exception name. If we've seen it before, remove it.
-            if not any(True for status_code, name in cls._registry if status_code == cls.status_code):
-                cls._registry[(cls.status_code, None)] = cls
-            else:
-                cls._registry.pop((cls.status_code, None), None)
-
-                cls._registry[(cls.status_code, cls.name)] = cls
+            cls._registry[(cls.status_code, cls.name)] = cls
         return cls
 
 
@@ -30,15 +22,41 @@ class SwordException(Exception, metaclass=SwordExceptionMeta):
     status_code=None#: int
     name=None#: str
     reason=None#: str
+    contexts=[]
 
     @classmethod
-    def for_status_code_and_name(cls, status_code: int, name: Optional[str]):
-        return cls._registry[(status_code, name)]
+    def for_status_code_and_name(cls, status_code: int, type_name: Optional[str]):
+        if type_name is not None:
+            return cls._registry[(status_code, type_name)]
+        else:
+            opts = cls.for_status_code(status_code)
+            if len(opts) == 1:
+                return opts[1]
+        return None
 
-    def __init__(self, message: str = None, *, response=None):
+    @classmethod
+    def for_status_code(cls, status_code: int):
+        return [v for k, v in cls._registry.items() if k[0] == status_code]
+
+    @classmethod
+    def for_type(cls, type_name: str):
+        opt = [v for k, v in cls._registry.items() if k[1] == type_name]
+        if len(opt) > 0:
+            return opt[0]
+        return None
+
+    def __init__(self, message: str = None, *, response=None, error_doc=None, request_url=None):
         self.message = message
         self.timestamp = datetime.datetime.now(datetime.timezone.utc)
         self.response = response
+        self.error_doc = error_doc
+        self.request_url = request_url
+
+
+class AmbiguousSwordException(SwordException):
+    def __init__(self, *args, status_code: int, **kwargs):
+        self.status_code = status_code
+        super().__init__(*args, **kwargs)
 
 
 class UnexpectedSwordException(SwordException):
@@ -54,6 +72,13 @@ class InvalidDataFromServer(SwordException):
     pass
 
 # Exceptions that can be raised server-side
+
+
+class NoCredentialsSupplied(SwordException):
+    status_code = HTTPStatus.UNAUTHORIZED
+    name = "NoCredentialsSupplied"
+    reason = "The request did not supply credentials, when the server was expecting to authenticate the request."
+
 
 class AuthenticationFailed(SwordException):
     status_code = HTTPStatus.FORBIDDEN
@@ -71,12 +96,14 @@ class ByReferenceFileSizeExceeded(SwordException):
     status_code = HTTPStatus.BAD_REQUEST
     name = "ByReferenceFileSizeExceeded"
     reason = "The client supplied a By-Reference deposit file, which specified a file size which exceeded the server's limit"
+    contexts = [constants.RequestContexts.ByReference]
 
 
 class ByReferenceNotAllowed(SwordException):
     status_code = HTTPStatus.PRECONDITION_FAILED
     name = "ByReferenceNotAllowed"
     reason = "The client attempted to carry out a By-Reference deposit on a server which does not support it"
+    contexts = [constants.RequestContexts.ByReference]
 
 
 class ContentMalformed(SwordException):
@@ -119,12 +146,14 @@ class InvalidSegmentSize(SwordException):
     status_code = HTTPStatus.BAD_REQUEST
     name = "InvalidSegmentSize"
     reason = "The client sent a segment that was not the final segment, and was not the size that it indicated segments would be"
+    contexts = [constants.RequestContexts.Temporary]
 
 
 class MaxAssembledSizeExceeded(SwordException):
     status_code = HTTPStatus.BAD_REQUEST
     name = "MaxAssembledSizeExceeded"
     reason = "During a segmented upload initialisation, the client specified a total file size which is larger than the maximum assembled file size supported by the server"
+    contexts = [constants.RequestContexts.Temporary]
 
 
 class MaxUploadSizeExceeded(SwordException):
@@ -137,6 +166,7 @@ class MetadataFormatNotAcceptable(SwordException):
     status_code = HTTPStatus.UNSUPPORTED_MEDIA_TYPE
     name = "MetadataFormatNotAcceptable"
     reason = "The Metadata-Format header specifies a metadata format for the request which is in a format that the server cannot accept"
+    contexts = [constants.RequestContexts.Metadata, constants.RequestContexts.MetadataAndByReference]
 
 
 class MethodNotAllowed(SwordException):
@@ -173,27 +203,32 @@ class SegmentedUploadNotAllowed(SwordException):
     status_code = HTTPStatus.PRECONDITION_FAILED
     name = "SegmentedUploadNotAllowed"
     reason = "The client attempted to carry out a Segmented Upload on a server which does not support it"
+    contexts = [constants.RequestContexts.SegmentInit]
 
 
 class SegmentedUploadTimedOut(SwordException):
     status_code = HTTPStatus.METHOD_NOT_ALLOWED
     name = "SegmentedUploadTimedOut"
     reason = "The client's segmented upload URL has timed out.  Servers MAY respond to this with a 404 and no explanation also."
+    contexts = [constants.RequestContexts.Temporary]
 
 
 class SegmentLimitExceeded(SwordException):
     status_code = HTTPStatus.BAD_REQUEST
     name = "SegmentLimitExceeded"
     reason = "During a segmented upload initialisation, the client specified a total number of intended segments which is larger than the limit specified by the server"
+    contexts = [constants.RequestContexts.SegmentInit]
 
 
 class UnexpectedSegment(SwordException):
     status_code = HTTPStatus.BAD_REQUEST
     name = "UnexpectedSegment"
     reason = "The client sent a segment that the server was not expecting; in particular the server may have recieved all the segments it was expecting, and this is an extra one"
+    contexts = [constants.RequestContexts.Temporary]
 
 
 class ValidationFailed(SwordException):
     status_code = HTTPStatus.BAD_REQUEST
     name = "ValidationFailed"
     reason = "The server could not validate the structure of the incoming content against its expected schema.  This may include the JSON schema of the SWORD documents, the metadata held within those documents, or the expected structure of packaged content."
+

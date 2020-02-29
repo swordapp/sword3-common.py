@@ -1,11 +1,4 @@
-import enum
-
 JSON_LD_CONTEXT = "https://swordapp.github.io/swordv3/swordv3.jsonld"
-
-TYPE_SERVICE_DOCUMENT = "ServiceDocument"
-TYPE_METADATA = "Metadata"
-TYPE_STATUS = "Status"
-TYPE_BY_REFERENCE = "ByReference"
 
 DISPOSITION_SEGMENT_INIT = "disposition_segment_init"
 DISPOSITION_DEPOSIT = "disposition_deposit"
@@ -32,6 +25,14 @@ PACKAGE_SIMPLEZIP = "http://purl.org/net/sword/3.0/package/SimpleZip"
 
 CREATED = 201
 ACCEPTED = 202
+
+
+class DocumentType:
+    ServiceDocument = "ServiceDocument"
+    Metadata = "Metadata"
+    Status = "Status",
+    ByReference = "ByReference"
+    Temporary = "Temporary"
 
 
 class DigestName:
@@ -65,3 +66,11 @@ class DepositState:
 class FileState:
     Ingested = "http://purl.org/net/sword/3.0/filestate/ingested"
     Pending = "http://purl.org/net/sword/3.0/filestate/pending"
+
+
+class RequestContexts:
+    ByReference = "ByReference"
+    Temporary = "Temporary"
+    Metadata = "Metadata"
+    MetadataAndByReference = "MetadataAndByReference"
+    SegmentInit = "SegmentInit"
