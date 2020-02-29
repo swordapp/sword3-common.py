@@ -40,3 +40,35 @@ class SegmentedFileUpload(SeamlessMixin):
         typ = self.__seamless__.get_single("@type")
         if typ is None:
             self.__seamless__.set_single("@type", constants.DocumentType.Temporary)
+
+    @property
+    def received(self):
+        return self.__seamless__.get_list("segments.received")
+
+    @received.setter
+    def received(self, val):
+        self.__seamless__.set_with_struct("segments.received", val)
+
+    @property
+    def expecting(self):
+        return self.__seamless__.get_list("segments.expecting")
+
+    @expecting.setter
+    def expecting(self, val):
+        self.__seamless__.set_with_struct("segments.expecting", val)
+
+    @property
+    def size(self):
+        return self.__seamless__.get_single("segments.size")
+
+    @size.setter
+    def size(self, val):
+        self.__seamless__.set_with_struct("segments.size", val)
+
+    @property
+    def segment_size(self):
+        return self.__seamless__.get_single("segments.segment_size")
+
+    @segment_size.setter
+    def segment_size(self, val):
+        self.__seamless__.set_with_struct("segments.segment_size", val)
