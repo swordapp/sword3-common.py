@@ -1,10 +1,10 @@
 from sword3common import constants
 
 class ContentDisposition(object):
-    def __init__(self, upload_type, content_type,
+    def __init__(self, upload_type, content_type=None,
                  filename=None,
                  assembled_size=None,
-                 segment_digest=None,
+                 assembled_digest=None,
                  segment_count=None,
                  segment_size=None,
                  segment_number=None
@@ -14,7 +14,7 @@ class ContentDisposition(object):
         self._content_type = content_type
         self._filename = filename
         self._size = assembled_size
-        self._digest = segment_digest
+        self._digest = assembled_digest
         self._segment_count = segment_count
         self._segment_size = segment_size
         self._segment_number = segment_number
@@ -39,6 +39,18 @@ class ContentDisposition(object):
     def metadata_and_by_reference_upload(cls):
         return ContentDisposition(constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_MDBR)
 
+    @classmethod
+    def initialise_segmented_upload(cls, assembled_size, assembled_digest, segment_count, segment_size):
+        return ContentDisposition(constants.DISPOSITION_SEGMENT_INIT,
+                                  assembled_size=assembled_size,
+                                  assembled_digest=assembled_digest,
+                                  segment_count=segment_count,
+                                  segment_size=segment_size)
+
+    @classmethod
+    def upload_file_segment(cls, segment_number):
+        return ContentDisposition(constants.DISPOSITION_FILE_SEGMENT, segment_number=segment_number)
+
     def serialise(self):
         disp_type = "attachment"
         if self._upload_type == constants.DISPOSITION_SEGMENT_INIT:
@@ -62,7 +74,8 @@ class ContentDisposition(object):
 
         if disp_type == "segment-init":
             params.append("size={x}".format(x=self._size))
-            params.append("digest={x}".format(x=self._digest))
+            if self._digest is not None:
+                params.append("digest={x}".format(x=self._digest))
             params.append("segment_count={x}".format(x=self._segment_count))
             params.append("segment_size={x}".format(x=self._segment_size))
         elif disp_type == "segment":
