@@ -42,7 +42,7 @@ class ByReference(SeamlessMixin):
 
         typ = self.__seamless__.get_single("@type")
         if typ is None:
-            self.__seamless__.set_single("@type", constants.TYPE_BY_REFERENCE)
+            self.__seamless__.set_single("@type", constants.DocumentType.ByReference)
 
     @property
     def data(self):

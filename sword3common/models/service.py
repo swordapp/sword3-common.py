@@ -68,7 +68,7 @@ class ServiceDocument(SeamlessMixin):
 
         typ = self.__seamless__.get_single("@type")
         if typ is None:
-            self.__seamless__.set_single("@type", constants.TYPE_SERVICE_DOCUMENT)
+            self.__seamless__.set_single("@type", constants.DocumentType.ServiceDocument)
 
 
     @property
@@ -82,3 +82,11 @@ class ServiceDocument(SeamlessMixin):
     @service_url.setter
     def service_url(self, url: str):
         self.__seamless__.set_with_struct("@id", url)
+
+    @property
+    def staging_url(self):
+        return self.__seamless__.get_single("staging")
+
+    @staging_url.setter
+    def staging_url(self, url):
+        self.__seamless__.set_with_struct("staging", url)

@@ -167,7 +167,7 @@ class StatusDocument(SeamlessMixin):
 
         typ = self.__seamless__.get_single("@type")
         if typ is None:
-            self.__seamless__.set_single("@type", constants.TYPE_STATUS)
+            self.__seamless__.set_single("@type", constants.DocumentType.Status)
 
     @property
     def data(self):
