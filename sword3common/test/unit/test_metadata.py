@@ -20,7 +20,7 @@ class TestMetadata(TestCase):
         assert m.get_dcterms_field("modified") == "now"
 
         assert m.data.get("@context") == constants.JSON_LD_CONTEXT
-        assert m.data.get("@type") == constants.TYPE_METADATA
+        self.assertEqual(constants.DocumentType.Metadata, m.data.get("@type"))
 
         m.verify_against_struct()
         m.apply_struct()
