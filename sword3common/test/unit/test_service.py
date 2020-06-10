@@ -20,7 +20,7 @@ class TestService(TestCase):
             assert isinstance(subs[0], ServiceDocument)
 
             assert s.data.get("@context") == constants.JSON_LD_CONTEXT
-            assert s.data.get("@type") == constants.TYPE_SERVICE_DOCUMENT
+            assert s.data.get("@type") == constants.DocumentType.ServiceDocument
 
         except SeamlessException as e:
             raise Exception(e.message)
