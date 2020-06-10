@@ -1,5 +1,4 @@
 # from __future__ import annotations
-
 import datetime
 from http import HTTPStatus
 from typing import cast, Dict, Tuple, Type, Optional
@@ -7,8 +6,9 @@ from typing import cast, Dict, Tuple, Type, Optional
 from .lib.seamless import SeamlessException
 from . import constants
 
+
 class SwordExceptionMeta(type):
-    _registry={} #: Dict[Tuple[int, Optional[str]], Type[SwordException]] = {}
+    _registry = {}  #: Dict[Tuple[int, Optional[str]], Type[SwordException]] = {}
 
     def __new__(mcs, name, bases, attrs):
         cls = super().__new__(mcs, name, bases, attrs)
@@ -19,10 +19,10 @@ class SwordExceptionMeta(type):
 
 class SwordException(Exception, metaclass=SwordExceptionMeta):
 
-    status_code=None#: int
-    name=None#: str
-    reason=None#: str
-    contexts=[]
+    status_code = None  #: int
+    name = None  #: str
+    reason = None  #: str
+    contexts = []
 
     @classmethod
     def for_status_code_and_name(cls, status_code: int, type_name: Optional[str]):
@@ -45,7 +45,9 @@ class SwordException(Exception, metaclass=SwordExceptionMeta):
             return opt[0]
         return None
 
-    def __init__(self, message: str = None, *, response=None, error_doc=None, request_url=None):
+    def __init__(
+        self, message: str = None, *, response=None, error_doc=None, request_url=None
+    ):
         self.message = message
         self.timestamp = datetime.datetime.now(datetime.timezone.utc)
         self.response = response
@@ -68,8 +70,10 @@ class UnexpectedSwordException(SwordException):
 
 # Exceptions that can be raised by a client
 
+
 class InvalidDataFromServer(SwordException):
     pass
+
 
 # Exceptions that can be raised server-side
 
@@ -166,7 +170,10 @@ class MetadataFormatNotAcceptable(SwordException):
     status_code = HTTPStatus.UNSUPPORTED_MEDIA_TYPE
     name = "MetadataFormatNotAcceptable"
     reason = "The Metadata-Format header specifies a metadata format for the request which is in a format that the server cannot accept"
-    contexts = [constants.RequestContexts.Metadata, constants.RequestContexts.MetadataAndByReference]
+    contexts = [
+        constants.RequestContexts.Metadata,
+        constants.RequestContexts.MetadataAndByReference,
+    ]
 
 
 class MethodNotAllowed(SwordException):
@@ -231,4 +238,3 @@ class ValidationFailed(SwordException):
     status_code = HTTPStatus.BAD_REQUEST
     name = "ValidationFailed"
     reason = "The server could not validate the structure of the incoming content against its expected schema.  This may include the JSON schema of the SWORD documents, the metadata held within those documents, or the expected structure of packaged content."
-

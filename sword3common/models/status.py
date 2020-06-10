@@ -2,25 +2,20 @@ from sword3common.lib.seamless import SeamlessMixin
 from sword3common import constants
 
 STATUS_STRUCT = {
-    "fields" : {
-        "@context" : {"coerce" : "unicode"},
-        "@id" : {"coerce" : "unicode"},
+    "fields": {
+        "@context": {"coerce": "unicode"},
+        "@id": {"coerce": "unicode"},
         "@type": {"coerce": "unicode"},
         "eTag": {"coerce": "unicode"},
         "service": {"coerce": "unicode"},
     },
-    "lists" : {
-        "state" : {"contains" : "object"},
-        "links" : {"contains" : "object"},
-        "forwarding" : {"contains" : "object"}
+    "lists": {
+        "state": {"contains": "object"},
+        "links": {"contains": "object"},
+        "forwarding": {"contains": "object"},
     },
-    "objects" : [
-        "metadata",
-        "fileSet",
-        "actions",
-        "lastAction"
-    ],
-    "required" : [
+    "objects": ["metadata", "fileSet", "actions", "lastAction"],
+    "required": [
         "@context",
         "@id",
         "@type",
@@ -28,47 +23,36 @@ STATUS_STRUCT = {
         "fileSet",
         "metadata",
         "service",
-        "state"
+        "state",
     ],
-
-    "structs" : {
-        "metadata" : {
-            "fields" : {
-                "@id": {"coerce": "unicode"},
-                "eTag": {"coerce": "unicode"}
-            }
+    "structs": {
+        "metadata": {
+            "fields": {"@id": {"coerce": "unicode"}, "eTag": {"coerce": "unicode"}}
         },
-        "fileSet" : {
-            "fields" : {
-                "@id": {"coerce": "unicode"},
-                "eTag": {"coerce": "unicode"}
-            },
-            "required" : [
-                "@id"
-            ]
+        "fileSet": {
+            "fields": {"@id": {"coerce": "unicode"}, "eTag": {"coerce": "unicode"}},
+            "required": ["@id"],
         },
-        "state" : {
-            "fields" : {
+        "state": {
+            "fields": {
                 "@id": {"coerce": "unicode"},
-                "description": {"coerce": "unicode"}
+                "description": {"coerce": "unicode"},
             },
-            "required" : [
-                "@id"
-            ]
+            "required": ["@id"],
         },
-        "actions" : {
-            "fields" : {
-                "getMetadata" : {"coerce" : "bool"},
-                "getFiles" : {"coerce" : "bool"},
-                "appendMetadata" : {"coerce" : "bool"},
-                "appendFiles" : {"coerce" : "bool"},
-                "replaceMetadata" : {"coerce" : "bool"},
-                "replaceFiles" : {"coerce" : "bool"},
-                "deleteMetadata" : {"coerce" : "bool"},
-                "deleteFiles" : {"coerce" : "bool"},
-                "deleteObject" : {"coerce" : "bool"}
+        "actions": {
+            "fields": {
+                "getMetadata": {"coerce": "bool"},
+                "getFiles": {"coerce": "bool"},
+                "appendMetadata": {"coerce": "bool"},
+                "appendFiles": {"coerce": "bool"},
+                "replaceMetadata": {"coerce": "bool"},
+                "replaceFiles": {"coerce": "bool"},
+                "deleteMetadata": {"coerce": "bool"},
+                "deleteFiles": {"coerce": "bool"},
+                "deleteObject": {"coerce": "bool"},
             },
-            "required" : [
+            "required": [
                 "getMetadata",
                 "getFiles",
                 "appendMetadata",
@@ -77,29 +61,26 @@ STATUS_STRUCT = {
                 "replaceFiles",
                 "deleteMetadata",
                 "deleteFiles",
-                "deleteObject"
-            ]
-        },
-        "lastAction" : {
-            "fields" : {
-                "timestamp" : {"coerce" : "datetime"},
-                "log" : {"coerce" : "unicode"}
-            },
-            "objects" : [
-                "treatment"
+                "deleteObject",
             ],
-
-            "structs" : {
-                "treatment" : {
-                    "fields" : {
+        },
+        "lastAction": {
+            "fields": {
+                "timestamp": {"coerce": "datetime"},
+                "log": {"coerce": "unicode"},
+            },
+            "objects": ["treatment"],
+            "structs": {
+                "treatment": {
+                    "fields": {
                         "@id": {"coerce": "unicode"},
-                        "description": {"coerce": "unicode"}
+                        "description": {"coerce": "unicode"},
                     }
                 }
-            }
+            },
         },
-        "links" : {
-            "fields" : {
+        "links": {
+            "fields": {
                 "@id": {"coerce": "unicode"},
                 "contentType": {"coerce": "unicode"},
                 "packaging": {"coerce": "unicode"},
@@ -117,45 +98,31 @@ STATUS_STRUCT = {
                 "metadataFormat": {"coerce": "unicode"},
                 "versionReplacedOn": {"coerce": "datetime"},
             },
-            "lists" : {
-                "rel" : {"contains" : "field", "coerce" : "unicode"}
-            },
-            "required" : [
-                "@id",
-                "rel"
-            ]
+            "lists": {"rel": {"contains": "field", "coerce": "unicode"}},
+            "required": ["@id", "rel"],
         },
-        "forwarding" : {
-            "fields" : {
-                "@id": {"coerce": "unicode"},
-            },
-            "lists" : {
-                "links" : {"contains" : "object"}
-            },
-
-            "structs" : {
-                "links" : {
-                    "fields" : {
+        "forwarding": {
+            "fields": {"@id": {"coerce": "unicode"},},
+            "lists": {"links": {"contains": "object"}},
+            "structs": {
+                "links": {
+                    "fields": {
                         "@id": {"coerce": "unicode"},
                         "contentType": {"coerce": "unicode"},
                     },
-                    "lists" : {
-                        "rel" : {"contains" : "field", "coerce" : "unicode"}
-                    },
-                    "required" : [
-                        "@id"
-                    ]
+                    "lists": {"rel": {"contains": "field", "coerce": "unicode"}},
+                    "required": ["@id"],
                 }
-            }
-        }
-    }
+            },
+        },
+    },
 }
 
 
 class StatusDocument(SeamlessMixin):
     __SEAMLESS_STRUCT__ = STATUS_STRUCT
 
-    __SEAMLESS_PROPERTIES__ = {}
+    __SEAMLESS_PROPERTIES__ = {}  # type: dict
 
     def __init__(self, raw=None):
         super(StatusDocument, self).__init__(raw)

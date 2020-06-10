@@ -7,3 +7,14 @@ from sword3common.models.byreference import ByReference
 from sword3common.models.mdbr import MetadataAndByReference
 from sword3common.models.segemented_upload import SegmentedFileUpload
 from sword3common.models.error import Error
+
+__all__ = [
+    "ContentDisposition",
+    "Metadata",
+    "ServiceDocument",
+    "StatusDocument",
+    "ByReference",
+    "MetadataAndByReference",
+    "SegmentedFileUpload",
+    "Error",
+]

@@ -3,6 +3,7 @@ from unittest import TestCase
 from sword3common.models.metadata import Metadata
 from sword3common import constants
 
+
 class TestMetadata(TestCase):
     def test_01_metadata(self):
         m = Metadata()

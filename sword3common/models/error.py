@@ -2,14 +2,15 @@ from sword3common.lib.seamless import SeamlessMixin
 from sword3common import constants
 
 ERROR_STRUCT = {
-    "fields" : {
-        "@context" : {"coerce" : "unicode"},
-        "@type" : {"coerce" : "unicode"},
-        "timestamp" : {"coerce" : "utcdatetime"},
-        "error" : {"coerce" : "unicode"},
-        "log" : {"coerce" : "unicode"}
+    "fields": {
+        "@context": {"coerce": "unicode"},
+        "@type": {"coerce": "unicode"},
+        "timestamp": {"coerce": "utcdatetime"},
+        "error": {"coerce": "unicode"},
+        "log": {"coerce": "unicode"},
     }
 }
+
 
 class Error(SeamlessMixin):
     __SEAMLESS_STRUCT__ = ERROR_STRUCT

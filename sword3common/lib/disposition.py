@@ -1,14 +1,18 @@
 from sword3common import constants
 
+
 class ContentDisposition(object):
-    def __init__(self, upload_type, content_type=None,
-                 filename=None,
-                 assembled_size=None,
-                 assembled_digest=None,
-                 segment_count=None,
-                 segment_size=None,
-                 segment_number=None
-            ):
+    def __init__(
+        self,
+        upload_type,
+        content_type=None,
+        filename=None,
+        assembled_size=None,
+        assembled_digest=None,
+        segment_count=None,
+        segment_size=None,
+        segment_number=None,
+    ):
 
         self._upload_type = upload_type
         self._content_type = content_type
@@ -21,35 +25,55 @@ class ContentDisposition(object):
 
     @classmethod
     def metadata_upload(cls):
-        return ContentDisposition(constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_MD)
+        return ContentDisposition(
+            constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_MD
+        )
 
     @classmethod
     def binary_upload(cls, filename):
-        return ContentDisposition(constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_BINARY, filename=filename)
+        return ContentDisposition(
+            constants.DISPOSITION_DEPOSIT,
+            constants.DISPOSITION_CONTENT_BINARY,
+            filename=filename,
+        )
 
     @classmethod
     def package_upload(cls, filename):
-        return ContentDisposition(constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_PACKAGE, filename=filename)
+        return ContentDisposition(
+            constants.DISPOSITION_DEPOSIT,
+            constants.DISPOSITION_CONTENT_PACKAGE,
+            filename=filename,
+        )
 
     @classmethod
     def by_reference_upload(cls):
-        return ContentDisposition(constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_BR)
+        return ContentDisposition(
+            constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_BR
+        )
 
     @classmethod
     def metadata_and_by_reference_upload(cls):
-        return ContentDisposition(constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_MDBR)
+        return ContentDisposition(
+            constants.DISPOSITION_DEPOSIT, constants.DISPOSITION_CONTENT_MDBR
+        )
 
     @classmethod
-    def initialise_segmented_upload(cls, assembled_size, assembled_digest, segment_count, segment_size):
-        return ContentDisposition(constants.DISPOSITION_SEGMENT_INIT,
-                                  assembled_size=assembled_size,
-                                  assembled_digest=assembled_digest,
-                                  segment_count=segment_count,
-                                  segment_size=segment_size)
+    def initialise_segmented_upload(
+        cls, assembled_size, assembled_digest, segment_count, segment_size
+    ):
+        return ContentDisposition(
+            constants.DISPOSITION_SEGMENT_INIT,
+            assembled_size=assembled_size,
+            assembled_digest=assembled_digest,
+            segment_count=segment_count,
+            segment_size=segment_size,
+        )
 
     @classmethod
     def upload_file_segment(cls, segment_number):
-        return ContentDisposition(constants.DISPOSITION_FILE_SEGMENT, segment_number=segment_number)
+        return ContentDisposition(
+            constants.DISPOSITION_FILE_SEGMENT, segment_number=segment_number
+        )
 
     def serialise(self):
         disp_type = "attachment"
@@ -59,13 +83,22 @@ class ContentDisposition(object):
             disp_type = "segment"
 
         params = []
-        if self._content_type in [constants.DISPOSITION_CONTENT_MD, constants.DISPOSITION_CONTENT_MDBR]:
+        if self._content_type in [
+            constants.DISPOSITION_CONTENT_MD,
+            constants.DISPOSITION_CONTENT_MDBR,
+        ]:
             params.append("metadata=true")
 
-        if self._content_type in [constants.DISPOSITION_CONTENT_BR, constants.DISPOSITION_CONTENT_MDBR]:
+        if self._content_type in [
+            constants.DISPOSITION_CONTENT_BR,
+            constants.DISPOSITION_CONTENT_MDBR,
+        ]:
             params.append("by-reference=true")
 
-        if self._content_type in [constants.DISPOSITION_CONTENT_BINARY, constants.DISPOSITION_CONTENT_PACKAGE]:
+        if self._content_type in [
+            constants.DISPOSITION_CONTENT_BINARY,
+            constants.DISPOSITION_CONTENT_PACKAGE,
+        ]:
             try:
                 self._filename.encode("iso-8859-1")
                 params.append("filename={x}".format(x=self._filename))

@@ -5,6 +5,7 @@ from sword3common.test.fixtures.service import ServiceFixtureFactory
 from sword3common.lib.seamless import SeamlessException
 from sword3common import constants
 
+
 class TestService(TestCase):
     def test_01_service_document(self):
         s = ServiceDocument()
