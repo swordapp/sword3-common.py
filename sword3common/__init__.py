@@ -18,3 +18,5 @@ __all__ = [
     "SegmentedFileUpload",
     "Error",
 ]
+
+from .version import __version__
