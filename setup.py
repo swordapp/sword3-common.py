@@ -21,4 +21,8 @@ setup(
     author_email="richard@cottagelabs.com",
     license="Apache2",
     classifiers=[],
+    extras_require={
+        "docs": ["Sphinx"],
+        "test": ["nose"]
+    }
 )
