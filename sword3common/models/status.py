@@ -120,6 +120,7 @@ STATUS_STRUCT = {
 
 
 class StatusDocument(SeamlessMixin):
+    """Status Document"""
     __SEAMLESS_STRUCT__ = STATUS_STRUCT
 
     __SEAMLESS_PROPERTIES__ = {}  # type: dict

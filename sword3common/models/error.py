@@ -13,6 +13,7 @@ ERROR_STRUCT = {
 
 
 class Error(SeamlessMixin):
+    """Error Document"""
     __SEAMLESS_STRUCT__ = ERROR_STRUCT
 
     __SEAMLESS_ALLOW_OTHER_FIELDS__ = False

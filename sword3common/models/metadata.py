@@ -11,6 +11,7 @@ METADATA_STRUCT = {
 
 
 class Metadata(SeamlessMixin):
+    """Metadata Document"""
     __SEAMLESS_STRUCT__ = METADATA_STRUCT
 
     __SEAMLESS_ALLOW_OTHER_FIELDS__ = True

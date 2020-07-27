@@ -24,6 +24,7 @@ BY_REFERENCE_STRUCT = {
 
 
 class ByReference(SeamlessMixin):
+    """By-Reference Document"""
     __SEAMLESS_STRUCT__ = BY_REFERENCE_STRUCT
 
     __SEAMLESS_ALLOW_OTHER_FIELDS__ = False

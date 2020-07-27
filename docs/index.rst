@@ -9,6 +9,7 @@ Welcome to SWORDv3 common library's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   api
 
 
 Indices and tables

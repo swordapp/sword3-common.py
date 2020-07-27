@@ -52,6 +52,7 @@ SERVICE_STRUCT = {
 
 
 class ServiceDocument(SeamlessMixin):
+    """Service Document"""
     __SEAMLESS_STRUCT__ = SERVICE_STRUCT
     __SEAMLESS_DEFAULT_COERCE__ = None
 

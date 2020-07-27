@@ -3,6 +3,7 @@ from sword3common.models.byreference import ByReference
 
 
 class MetadataAndByReference:
+    """Metadata + By-Reference Document"""
     def __init__(self, metadata: Metadata, by_reference: ByReference):
         self._md = metadata
         self._br = by_reference

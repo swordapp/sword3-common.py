@@ -24,6 +24,7 @@ SEGMENTED_FILE_UPLOAD_STRUCT = {
 
 
 class SegmentedFileUpload(SeamlessMixin):
+    """Segmented File Upload Document"""
     __SEAMLESS_STRUCT__ = SEGMENTED_FILE_UPLOAD_STRUCT
 
     __SEAMLESS_ALLOW_OTHER_FIELDS__ = False
