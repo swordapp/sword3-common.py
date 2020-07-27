@@ -13,6 +13,7 @@ tmp/*
 scratch.py
 .coverage
 htmlcov/
+docs/_build
 
 # PyCharm and other IntelliJ-based IDE-s and editors' folder:
 .idea
