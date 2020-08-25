@@ -19,4 +19,9 @@ __all__ = [
     "Error",
 ]
 
+# Make this module the canonical import location for these members.
+# This will provide shorter class path/names in the documentation.
+for name in __all__:
+    locals()[name].__module__ = __name__
+
 from .version import __version__
