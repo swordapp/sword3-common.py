@@ -14,11 +14,12 @@ class SwordExceptionMeta(type):
         cls = super().__new__(mcs, name, bases, attrs)
         if hasattr(cls, "status_code") and hasattr(cls, "name"):
             cls._registry[(cls.status_code, cls.name)] = cls
+        if getattr(cls, "reason", None):
+            cls.__doc__ = cls.reason
         return cls
 
 
 class SwordException(Exception, metaclass=SwordExceptionMeta):
-
     status_code = None  #: int
     name = None  #: str
     reason = None  #: str

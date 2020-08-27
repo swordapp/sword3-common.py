@@ -1,3 +1,4 @@
+#: The JSON-LD context for the SWORDv3 protocol
 JSON_LD_CONTEXT = "https://swordapp.github.io/swordv3/swordv3.jsonld"
 
 DISPOSITION_SEGMENT_INIT = "disposition_segment_init"
@@ -19,9 +20,12 @@ DIGEST_MD5 = "MD5"
 
 URI_METADATA = "http://purl.org/net/sword/3.0/types/Metadata"
 
+#: The URI for the `Binary <https://swordapp.github.io/swordv3/swordv3.html#22.1>`_ packaging format
 PACKAGE_BINARY = "http://purl.org/net/sword/3.0/package/Binary"
-PACKAGE_SWORDBAGIT = "http://purl.org/net/sword/3.0/package/SWORDBagIt"
+#: The URI for the `SimpleZip <https://swordapp.github.io/swordv3/swordv3.html#22.2>`_ packaging format
 PACKAGE_SIMPLEZIP = "http://purl.org/net/sword/3.0/package/SimpleZip"
+#: The URI for the `SWORDBagIt <https://swordapp.github.io/swordv3/swordv3.html#22.3>`_ packaging format
+PACKAGE_SWORDBAGIT = "http://purl.org/net/sword/3.0/package/SWORDBagIt"
 
 CREATED = 201
 ACCEPTED = 202
