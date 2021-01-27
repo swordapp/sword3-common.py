@@ -32,7 +32,7 @@ class SwordException(Exception, metaclass=SwordExceptionMeta):
         else:
             opts = cls.for_status_code(status_code)
             if len(opts) == 1:
-                return opts[1]
+                return opts[0]
         return None
 
     @classmethod
